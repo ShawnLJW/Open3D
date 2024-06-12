@@ -39,19 +39,23 @@ def get_point_object(geometry, point_sample_factor=1):
 
 
 def get_mesh_object(geometry,):
-    pl_mygrey = [0, 'rgb(153, 153, 153)'], [1., 'rgb(255,255,255)']
     triangles = np.asarray(geometry.triangles)
     vertices = np.asarray(geometry.vertices)
-
+    if geometry.has_vertex_colors():
+        vertexcolor = np.asarray(geometry.vertex_colors)
+    elif geometry.has_vertex_normals():
+        vertexcolor = (0.5, 0.5, 0.5) + np.asarray(geometry.vertex_normals) * 0.5
+    else:
+        geometry.paint_uniform_color((0.6, 0.6, 0.6))
+        vertexcolor = np.asarray(geometry.vertex_colors)
     mesh_3d = go.Mesh3d(x=vertices[:, 0],
                         y=vertices[:, 1],
                         z=vertices[:, 2],
                         i=triangles[:, 0],
                         j=triangles[:, 1],
                         k=triangles[:, 2],
+                        vertexcolor=vertexcolor,
                         flatshading=True,
-                        colorscale=pl_mygrey,
-                        intensity=vertices[:, 0],
                         lighting=dict(ambient=0.18,
                                       diffuse=1,
                                       fresnel=0.1,
